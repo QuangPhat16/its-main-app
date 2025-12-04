@@ -19,9 +19,10 @@ import { CourseModule } from './course_management/course.module';
         database: configService.get<string>('DB_NAME', 'its_db'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // Set to false in production
-        ssl: {
-          rejectUnauthorized: false, // For development; set to true in production with CA cert
-        },
+        ssl: false,
+        // ssl: {
+        //   rejectUnauthorized: false, // For development; set to true in production with CA cert
+        // },
       }),
       inject: [ConfigService],
     }),

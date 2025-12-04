@@ -11,13 +11,13 @@ export class AuthController {
 
   @Post('register')
   async register(@Req() req: any, @Body() dto: RegisterDto) {
-    return this.authService.register(req);
+    return this.authService.register(dto);
   }
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
   async login(@Req() req: any, @Body() dto: LoginDto) {
-   return this.authService.login(req);
+   return this.authService.login(req.user);
   }
 
   // Google OAuth

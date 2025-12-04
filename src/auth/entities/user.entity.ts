@@ -48,12 +48,12 @@ export abstract class User {
   }
 }
 
-@Entity() 
+@Entity()
 export class Student extends User {
   // Add student-specific fields here, e.g.:
 }
 
-@Entity() 
+@Entity()
 export class Instructor extends User {
   @OneToMany(() => Course, (course) => course.instructor, { cascade: true })
   courses: Course[];
