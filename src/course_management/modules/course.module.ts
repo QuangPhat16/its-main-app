@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseService } from '../services/course.service';
 import { LessonService } from '../services/lesson.service';
 import { QuizService } from '../services/quiz.service';
+import { MediaService } from '../services/media.service';
+import { MediaModule } from './media.module';
 import { CourseController } from '../controllers/course.controller';
 import { Course } from '../entities/course.entity';
 import { Lesson, LessonContent } from '../entities/lesson.entity';
@@ -12,7 +14,7 @@ import { AuthModule } from '../../auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Course, Lesson, LessonContent, Quiz, Question, Answer]),
-    AuthModule, 
+    AuthModule, MediaModule
   ],
   providers: [CourseService, LessonService, QuizService],
   controllers: [CourseController],
