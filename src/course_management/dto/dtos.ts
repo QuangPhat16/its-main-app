@@ -43,7 +43,7 @@ export class UpdateQuizDto {
 
 export class CreateLessonContentDto {
   serial: number;
-  contentName?: string;
+  contentName: string;
   type: ContentType;
   content: string;
 }
