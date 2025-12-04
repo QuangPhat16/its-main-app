@@ -10,8 +10,8 @@ export enum UserRole {
 
 @Entity('users')
 export abstract class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   email: string;

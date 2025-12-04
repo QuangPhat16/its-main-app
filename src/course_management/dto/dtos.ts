@@ -1,13 +1,13 @@
 import { ContentType } from "../entities/lesson.entity";
 
 export class CreateCourseDto {
-  courseName: string;
+  title: string;
   description?: string;
-  price: number;
+  price?: number;
 }
 
 export class UpdateCourseDto {
-  courseName?: string;
+  title?: string;
   description?: string;
   price?: number;
 }

@@ -1,5 +1,7 @@
 import {Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Req, Query,} from '@nestjs/common';
-import { CourseService } from './course.service';
+import { CourseService } from './service/course.service';
+import { LessonService } from './service/lesson.service';
+import { QuizService } from './service/quiz.service';
 import {
   CreateCourseDto,
   UpdateCourseDto,
@@ -19,7 +21,11 @@ import { Request } from 'express';
 @Controller('courses')
 @UseGuards(JwtAuthGuard) // Authenticate all routes
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor( 
+    private readonly courseService: CourseService,
+    private readonly lessonService: LessonService,
+    private readonly quizService: QuizService
+  ) {}
 
   @Post()
   @UseGuards(RolesGuard)
@@ -54,7 +60,6 @@ export class CourseController {
   }
 
   // Lesson Routes (nested under course)
-
   @Post(':courseId/lessons')
   @UseGuards(RolesGuard)
   @Roles(UserRole.INSTRUCTOR)
@@ -63,17 +68,17 @@ export class CourseController {
     @Req() req: Request & { user: any },
     @Body() dto: CreateLessonDto,
   ) {
-    return this.courseService.createLesson(courseId, req.user.id, dto);
+    return this.lessonService.createLesson(courseId, req.user.id, dto);
   }
 
   @Get(':courseId/lessons')
   async getLessonsByCourse(@Param('courseId') courseId: string, @Query('loadContents') loadContents: boolean) {
-    return this.courseService.getLessonsByCourse(courseId, loadContents);
+    return this.lessonService.getLessonsByCourse(courseId, loadContents);
   }
 
   @Get(':courseId/lessons/:lessonId')
   async getLessonById(@Param('lessonId') lessonId: string, @Query('loadRelations') loadRelations: boolean) {
-    return this.courseService.getLessonById(lessonId, loadRelations);
+    return this.lessonService.getLessonById(lessonId, loadRelations);
   }
 
   @Patch(':courseId/lessons/:lessonId')
@@ -84,17 +89,16 @@ export class CourseController {
     @Req() req: Request & { user: any },
     @Body() dto: UpdateLessonDto,
   ) {
-    return this.courseService.updateLesson(lessonId, req.user.id, dto);
+    return this.lessonService.updateLesson(lessonId, req.user.id, dto);
   }
 
   @Delete(':courseId/lessons/:lessonId')
   @UseGuards(RolesGuard)
   @Roles(UserRole.INSTRUCTOR)
   async deleteLesson(@Param('lessonId') lessonId: string, @Req() req: Request & { user: any }) {
-    await this.courseService.deleteLesson(lessonId, req.user.id);
+    await this.lessonService.deleteLesson(lessonId, req.user.id);
     return { message: 'Lesson deleted successfully' };
   }
-
   // Quiz Routes (nested under course)
 
   @Post(':courseId/quizzes')
@@ -105,17 +109,17 @@ export class CourseController {
     @Req() req: Request & { user: any },
     @Body() dto: CreateQuizDto,
   ) {
-    return this.courseService.createQuiz(courseId, req.user.id, dto);
+    return this.quizService.createQuiz(courseId, req.user.id, dto);
   }
 
   @Get(':courseId/quizzes')
   async getQuizzesByCourse(@Param('courseId') courseId: string, @Query('loadQuestions') loadQuestions: boolean) {
-    return this.courseService.getQuizzesByCourse(courseId, loadQuestions);
+    return this.quizService.getQuizzesByCourse(courseId, loadQuestions);
   }
 
   @Get(':courseId/quizzes/:quizId')
   async getQuizById(@Param('quizId') quizId: string, @Query('loadRelations') loadRelations: boolean) {
-    return this.courseService.getQuizById(quizId, loadRelations);
+    return this.quizService.getQuizById(quizId, loadRelations);
   }
 
   @Patch(':courseId/quizzes/:quizId')
@@ -126,14 +130,14 @@ export class CourseController {
     @Req() req: Request & { user: any },
     @Body() dto: UpdateQuizDto,
   ) {
-    return this.courseService.updateQuiz(quizId, req.user.id, dto);
+    return this.quizService.updateQuiz(quizId, req.user.id, dto);
   }
 
   @Delete(':courseId/quizzes/:quizId')
   @UseGuards(RolesGuard)
   @Roles(UserRole.INSTRUCTOR)
   async deleteQuiz(@Param('quizId') quizId: string, @Req() req: Request & { user: any }) {
-    await this.courseService.deleteQuiz(quizId, req.user.id);
+    await this.quizService.deleteQuiz(quizId, req.user.id);
     return { message: 'Quiz deleted successfully' };
   }
 
@@ -147,14 +151,14 @@ export class CourseController {
     @Req() req: Request & { user: any },
     @Body() dto: CreateLessonContentDto,
   ) {
-    return this.courseService.createLessonContent(lessonId, req.user.id, dto);
+    return this.lessonService.createLessonContent(lessonId, req.user.id, dto);
   }
 
   @Delete(':courseId/lessons/:lessonId/contents/:contentId')
   @UseGuards(RolesGuard)
   @Roles(UserRole.INSTRUCTOR)
   async deleteLessonContent(@Param('contentId') contentId: string, @Req() req: Request & { user: any }) {
-    await this.courseService.deleteLessonContent(contentId, req.user.id);
+    await this.lessonService.deleteLessonContent(contentId, req.user.id);
     return { message: 'Content deleted successfully' };
   }
 
@@ -168,14 +172,14 @@ export class CourseController {
     @Req() req: Request & { user: any },
     @Body() dto: CreateQuestionDto,
   ) {
-    return this.courseService.createQuestion(quizId, req.user.id, dto);
+    return this.quizService.createQuestion(quizId, req.user.id, dto);
   }
 
   @Delete(':courseId/quizzes/:quizId/questions/:questionId')
   @UseGuards(RolesGuard)
   @Roles(UserRole.INSTRUCTOR)
   async deleteQuestion(@Param('questionId') questionId: string, @Req() req: Request & { user: any }) {
-    await this.courseService.deleteQuestion(questionId, req.user.id);
+    await this.quizService.deleteQuestion(questionId, req.user.id);
     return { message: 'Question deleted successfully' };
   }
 }
