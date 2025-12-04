@@ -105,7 +105,7 @@ export class AuthService {
   }
 
   // Optional: helper to get full user with correct type (useful in other services)
-  async findUserById(id: number): Promise<User | null> {
+  async findUserById(id: string): Promise<User | null> {
     return this.userRepo.findOne({
       where: { id },
     });
