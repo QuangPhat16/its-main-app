@@ -1,15 +1,10 @@
+// src/auth/entities/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, BeforeInsert, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Course } from 'src/course_management/entities/course.entity'; // Updated path (rename folder!)
+import { UserRole } from './user-role.enum';
+import { Course } from 'src/course_management/entities/course.entity';
 
-export enum UserRole {
-  STUDENT = 'student',
-  INSTRUCTOR = 'instructor',
-  ADMIN = 'admin',
-}
-
-@Entity('users')
-export abstract class User {
+export abstract class BaseUser {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,7 +12,7 @@ export abstract class User {
   email: string;
 
   @Column({ nullable: true })
-  password?: string; // null for Google users
+  password?: string;
 
   @Column({ nullable: true })
   googleId?: string;
@@ -25,14 +20,10 @@ export abstract class User {
   @Column({ nullable: true })
   name?: string;
 
-  @CreateDateColumn() // Removed invalid default—TypeORM handles it
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.STUDENT,
-  })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.STUDENT })
   role: UserRole;
 
   @BeforeInsert()
@@ -48,18 +39,30 @@ export abstract class User {
   }
 }
 
-@Entity()
-export class Student extends User {
-  // Add student-specific fields here, e.g.:
+// 3 bảng riêng biệt – map đúng tên bảng bạn đã tạo sẵn
+@Entity('student')
+export class Student extends BaseUser {
+  constructor(data?: Partial<Student>) {
+    super();
+    Object.assign(this, { ...data, role: UserRole.STUDENT });
+  }
 }
 
-@Entity()
-export class Instructor extends User {
+@Entity('instructor')
+export class Instructor extends BaseUser {
   @OneToMany(() => Course, (course) => course.instructor, { cascade: true })
   courses: Course[];
+
+  constructor(data?: Partial<Instructor>) {
+    super();
+    Object.assign(this, { ...data, role: UserRole.INSTRUCTOR });
+  }
 }
 
-@Entity() // Add this if using ADMIN role
-export class Admin extends User {
-  // Add admin-specific fields if needed
+@Entity('admin')
+export class Admin extends BaseUser {
+  constructor(data?: Partial<Admin>) {
+    super();
+    Object.assign(this, { ...data, role: UserRole.ADMIN });
+  }
 }

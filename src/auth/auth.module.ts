@@ -1,12 +1,15 @@
+// src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { User, Student, Instructor } from './entities/user.entity';
+import { AuthController } from './auth.controller';
+
+import { Student } from './entities/student.entity';
+import { Instructor } from './entities/instructor.entity';
+import { Admin } from './entities/admin.entity';
 
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -15,17 +18,14 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 
-
-
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Student, Instructor]),
+    TypeOrmModule.forFeature([Student, Instructor, Admin]),
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'your_jwt_secret',
+      secret: process.env.JWT_SECRET || 'super-secret-key-2025',
       signOptions: { expiresIn: '24h' },
     }),
-    ConfigModule,
   ],
   providers: [
     AuthService,
