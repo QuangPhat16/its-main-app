@@ -21,14 +21,15 @@ export class AuthController {
   }
 
   // Google OAuth
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleAuth() {}
+  // làm sau nếu frontend có làm
+  // @Get('google')
+  // @UseGuards(AuthGuard('google'))
+  // async googleAuth() {}
 
-  @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Body() req) {
-    return this.authService.login(req.user);
-  }
+  // @Get('google/callback')
+  // @UseGuards(AuthGuard('google'))
+  // async googleAuthRedirect(@Body() req) {
+  //   return this.authService.login(req.user);
+  // }
 
 }
