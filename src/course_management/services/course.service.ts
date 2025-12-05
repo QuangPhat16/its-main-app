@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from '../entities/course.entity';
-import { Instructor } from '../../auth/entities/user.entity'; 
+import { Instructor, UserRole } from '../../auth/entities/user.entity'; 
 import { CreateCourseDto, UpdateCourseDto } from '../dto/dtos';
 import { CourseStatus } from '../entities/course.entity';
 
@@ -17,7 +17,7 @@ export class CourseService {
    ){}
 
    async createCourse(authUser: { userId: string; role: string }, dto: CreateCourseDto): Promise<Course> {
-   if (authUser.role !== 'INSTRUCTOR') {
+   if (authUser.role !== UserRole.INSTRUCTOR) {
       throw new ForbiddenException('Only instructors can create courses');
    }
 
