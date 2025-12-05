@@ -4,7 +4,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
+
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -22,12 +25,16 @@ export class AuthController {
 
   // Google OAuth
   @Get('google')
+  @ApiOperation({ summary: 'Redirect to Google OAuth2 login' })
+  @ApiResponse({ status: 302, description: 'Redirecting to Google...' })
   @UseGuards(AuthGuard('google'))
-  async googleAuth() {}
+  googleAuth() {}
 
   @Get('google/callback')
+  @ApiOperation({ summary: 'Google OAuth2 callback' })
+  @ApiResponse({ status: 200, description: 'User logged in via Google' })
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Body() req) {
+  googleAuthRedirect(@Req() req) {
     return this.authService.login(req.user);
   }
 
