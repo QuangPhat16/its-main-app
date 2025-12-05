@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from '../entities/course.entity';
-import { Instructor } from '../../auth/entities/user.entity'; // Adjust path
+import { Instructor } from '../../auth/entities/user.entity'; 
 import { CreateCourseDto, UpdateCourseDto } from '../dto/dtos';
 import { CourseStatus } from '../entities/course.entity';
 
@@ -11,12 +11,29 @@ export class CourseService {
    constructor(
       @InjectRepository(Course)
       private courseRepo: Repository<Course>,
-   ) {}
 
-   async createCourse(instructor: Instructor, dto: CreateCourseDto): Promise<Course> {
-      const course = this.courseRepo.create({ ...dto, instructor });
-      return this.courseRepo.save(course);
+     @InjectRepository(Instructor)
+      private instructorRepo: Repository<Instructor>
+   ){}
+
+   async createCourse(authUser: { userId: string; role: string }, dto: CreateCourseDto): Promise<Course> {
+   if (authUser.role !== 'INSTRUCTOR') {
+      throw new ForbiddenException('Only instructors can create courses');
    }
+
+   const instructor = await this.instructorRepo.findOne({ where: { id: authUser.userId }});
+   if (!instructor) {
+      throw new NotFoundException('Instructor not found');
+   }
+
+   const course = this.courseRepo.create({
+      ...dto,
+      instructor,
+   });
+
+   return this.courseRepo.save(course);
+   }
+
 
    async getAllCourses(): Promise<Partial<Course>[]> {
       return this.courseRepo.find({

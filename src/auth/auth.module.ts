@@ -1,15 +1,13 @@
-// src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 
-import { Student } from './entities/user.entity';
-import { Instructor } from './entities/user.entity';
-import { Admin } from './entities/user.entity';
+import { Student, Instructor, Admin } from './entities/user.entity';
 
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -20,22 +18,30 @@ import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+
     TypeOrmModule.forFeature([Student, Instructor, Admin]),
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'super-secret-key-2025',
-      signOptions: { expiresIn: '24h' },
+
+    // fix env import
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get('JWT_SECRET'),
+        signOptions: { expiresIn: '24h' },
+      }),
     }),
   ],
   providers: [
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    GoogleStrategy,
+    // GoogleStrategy, //Not implemented yet
     JwtAuthGuard,
     RolesGuard,
   ],
   controllers: [AuthController],
-  exports: [AuthService, JwtAuthGuard, RolesGuard],
+  exports: [AuthService],
 })
 export class AuthModule {}
