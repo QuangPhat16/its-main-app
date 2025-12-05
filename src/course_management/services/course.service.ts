@@ -50,12 +50,8 @@ export class CourseService {
       });
    }
 
-   async getCourseById(id: string, loadRelations = false): Promise<Course> {
-      const relations = loadRelations
-         ? ['instructor', 'lessons', 'lessons.contents', 'quizzes', 'quizzes.questions', 'quizzes.questions.answers']
-         : ['instructor'];
-
-      const course = await this.courseRepo.findOne({ where: { id }, relations });
+   async getCourseById(id: string): Promise<Course> {
+      const course = await this.courseRepo.findOne({ where: { id } });
       if (!course) {
          throw new NotFoundException(`Course with ID ${id} not found`);
       }

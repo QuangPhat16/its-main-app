@@ -32,12 +32,20 @@ export class CourseController {
     return this.courseService.getAllCourses();
   }
 
+  @Get('instructor/me')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.INSTRUCTOR)
+  @ApiOperation({ summary: 'Get all courses created by logged-in instructor' })
+  getMyInstructorCourses(@Req() req: any) {
+    return this.courseService.getInstructorCourses(req.user.userId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get course by ID' })
   @ApiResponse({ status: 200, description: 'Course details' })
   @ApiResponse({ status: 404, description: 'Course not found' })
-  getCourseById(@Param('id') id: string, @Query('loadRelations') loadRelations = false) {
-    return this.courseService.getCourseById(id, loadRelations);
+  getCourseById(@Param('id') id: string) {
+    return this.courseService.getCourseById(id);
   }
 
   @Patch(':id')
@@ -46,7 +54,7 @@ export class CourseController {
   @ApiOperation({ summary: 'Update course (owner only)' })
   @ApiResponse({ status: 200, description: 'Course updated' })
   updateCourse(@Param('id') id: string, @Req() req: any, @Body() dto: UpdateCourseDto) {
-    return this.courseService.updateCourse(id, req.user.id, dto);
+    return this.courseService.updateCourse(id, req.user.userId, dto);
   }
 
   @Delete(':id')
