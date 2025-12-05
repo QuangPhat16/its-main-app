@@ -18,7 +18,6 @@ import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
 
     TypeOrmModule.forFeature([Student, Instructor, Admin]),
     PassportModule,
@@ -28,7 +27,7 @@ import { RolesGuard } from './guards/roles.guard';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET'),
+        secret: config.get<string>('JWT_SECRET','your_jwt_secret123'),
         signOptions: { expiresIn: '24h' },
       }),
     }),
