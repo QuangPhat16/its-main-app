@@ -21,9 +21,10 @@ import { CourseModule } from './course_management/modules/course.module';
         database: configService.get<string>('DB_NAME', 'its_db'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // Set to false in production
-        ssl: {
-          rejectUnauthorized: false, // For development; set to true in production with CA cert
-        },
+        // ssl: {
+        //   rejectUnauthorized: false, // For development; set to true in production with CA cert
+        // },
+        ssl: false,
       }),
       inject: [ConfigService],
     }),
@@ -31,7 +32,7 @@ import { CourseModule } from './course_management/modules/course.module';
     CourseModule,
     // ...
   ],
-  controllers: [AppController],    
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
