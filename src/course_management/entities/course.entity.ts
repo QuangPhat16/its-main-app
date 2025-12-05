@@ -3,6 +3,10 @@ import {Instructor} from "../../auth/entities/user.entity";
 import { Lesson } from './lesson.entity';
 import { Quiz } from './quiz.entity';
 
+export enum CourseStatus{
+  DRAFT = 'draft',
+  PUBLISH = 'publish'
+}
 
 @Entity('course')
 export class Course {
@@ -10,13 +14,16 @@ export class Course {
   id: string;  
 
   @Column()
-  courseName: string;
+  title: string;
 
   @Column({nullable: true})
   description: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0})
   price: number;
+
+  @Column({type: 'enum', enum: CourseStatus, default: CourseStatus.DRAFT})
+  status: CourseStatus
 
   @OneToMany(() => Lesson, (lesson) => lesson.course, {
     cascade: true,

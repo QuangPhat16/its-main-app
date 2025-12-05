@@ -188,6 +188,7 @@ export class AuthService {
       return this.getRepository(role).findOne({ where: { id } } as any);
     }
 
+<<<<<<< HEAD
     // Nếu không biết role → tìm lần lượt
     const repos = [this.studentRepo, this.instructorRepo, this.adminRepo];
     for (const repo of repos) {
@@ -195,5 +196,16 @@ export class AuthService {
       if (found) return found;
     }
     return null;
+=======
+    await this.userRepo.save(user);
+    return user;
+  }
+
+  // Optional: helper to get full user with correct type (useful in other services)
+  async findUserById(id: string): Promise<User | null> {
+    return this.userRepo.findOne({
+      where: { id },
+    });
+>>>>>>> master
   }
 }

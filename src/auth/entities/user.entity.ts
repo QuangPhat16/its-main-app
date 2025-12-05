@@ -4,9 +4,22 @@ import * as bcrypt from 'bcrypt';
 import { UserRole } from './user-role.enum';
 import { Course } from 'src/course_management/entities/course.entity';
 
+<<<<<<< HEAD
 export abstract class BaseUser {
   @PrimaryGeneratedColumn()
   id: number;
+=======
+export enum UserRole {
+  STUDENT = 'student',
+  INSTRUCTOR = 'instructor',
+  ADMIN = 'admin',
+}
+
+@Entity('users')
+export abstract class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+>>>>>>> master
 
   @Column({ unique: true })
   email: string;

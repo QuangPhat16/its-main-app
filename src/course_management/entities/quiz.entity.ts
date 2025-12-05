@@ -8,9 +8,13 @@ export class Quiz{
   id: string;
 
   @Column()
-  quizName: string;
+  title: string;
+
+  @Column()
+  timeLimit: number;
 
   @OneToMany(()=>Question, (question) => question.quiz, {
+    cascade: true,     // Saves questions & answers automatically
     eager: false
   })
   questions: Question[];

@@ -46,7 +46,10 @@ export class LessonContent {
   type: ContentType
 
   @Column()
-  content: string;//text or url to media material
+  content: string;// for text content
+
+  @Column()
+  url: string;//for media content
 
 
   @ManyToOne(() => Lesson, (lesson) => lesson.contents, {
