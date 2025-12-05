@@ -28,7 +28,7 @@ export class CourseService {
 
    const course = this.courseRepo.create({
       ...dto,
-      instructor,
+      instructor: { id: authUser.userId } as Instructor // only store instructor ID,
    });
 
    return this.courseRepo.save(course);

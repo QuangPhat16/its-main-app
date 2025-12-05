@@ -22,7 +22,7 @@ export class Course {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0.0})
   price: number;
 
-  @Column({type: 'enum', enum: CourseStatus, default: CourseStatus.DRAFT})
+  @Column({type: 'enum', enum: CourseStatus, default: CourseStatus.PUBLISH})
   status: CourseStatus
 
   @OneToMany(() => Lesson, (lesson) => lesson.course, {
@@ -37,7 +37,7 @@ export class Course {
   })
   quizzes: Quiz[];
 
-  @ManyToOne(()=> Instructor, (instructor) => instructor.courses, {})
+  @ManyToOne(()=> Instructor, (instructor) => instructor.courses, {eager: false})
   @JoinColumn({name: 'instructorId'})
   instructor: Instructor
 
