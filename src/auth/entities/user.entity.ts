@@ -1,25 +1,17 @@
-// src/auth/entities/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, BeforeInsert, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserRole } from './user-role.enum';
 import { Course } from 'src/course_management/entities/course.entity';
 
-<<<<<<< HEAD
-export abstract class BaseUser {
-  @PrimaryGeneratedColumn()
-  id: number;
-=======
+
 export enum UserRole {
   STUDENT = 'student',
   INSTRUCTOR = 'instructor',
   ADMIN = 'admin',
 }
 
-@Entity('users')
-export abstract class User {
-  @PrimaryGeneratedColumn('uuid')
+export abstract class BaseUser {
+  @PrimaryGeneratedColumn()
   id: string;
->>>>>>> master
 
   @Column({ unique: true })
   email: string;

@@ -8,13 +8,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
-import { Student } from './entities/student.entity';
-import { Instructor } from './entities/instructor.entity';
-import { Admin } from './entities/admin.entity';
+import { Student } from './entities/user.entity';
+import { Instructor } from './entities/user.entity';
+import { Admin } from './entities/user.entity';
 
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { UserRole } from './entities/user-role.enum';
+import { UserRole } from './entities/user.entity';
 
 // Type chung để các service khác dùng dễ dàng
 export type AppUser = Student | Instructor | Admin;
@@ -188,7 +188,6 @@ export class AuthService {
       return this.getRepository(role).findOne({ where: { id } } as any);
     }
 
-<<<<<<< HEAD
     // Nếu không biết role → tìm lần lượt
     const repos = [this.studentRepo, this.instructorRepo, this.adminRepo];
     for (const repo of repos) {
@@ -196,16 +195,5 @@ export class AuthService {
       if (found) return found;
     }
     return null;
-=======
-    await this.userRepo.save(user);
-    return user;
-  }
-
-  // Optional: helper to get full user with correct type (useful in other services)
-  async findUserById(id: string): Promise<User | null> {
-    return this.userRepo.findOne({
-      where: { id },
-    });
->>>>>>> master
   }
 }

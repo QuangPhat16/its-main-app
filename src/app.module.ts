@@ -15,16 +15,15 @@ import { CourseModule } from './course_management/modules/course.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432), // Built-in default + type conversion
+        port: configService.get<number>('DB_PORT', 5432),
         username: configService.get<string>('DB_USER', 'its_user'),
         password: configService.get<string>('DB_PASSWORD', 'its_password'),
         database: configService.get<string>('DB_NAME', 'its_db'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // Set to false in production
-        ssl: false,
-        // ssl: {
-        //   rejectUnauthorized: false, // For development; set to true in production with CA cert
-        // },
+        ssl: {
+          rejectUnauthorized: false, // For development; set to true in production with CA cert
+        },
       }),
       inject: [ConfigService],
     }),
