@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Quiz, Question, Answer } from '../entities/quiz.entity';
 import { CreateQuizDto, UpdateQuizDto, CreateQuestionDto } from '../dto/dtos';
 import { CourseService } from './course.service';
+import { Course } from '../entities/course.entity';
 
 @Injectable()
 export class QuizService {
@@ -23,12 +24,12 @@ export class QuizService {
       const quiz = this.quizRepo.create({
          title: dto.title,
          timeLimit: dto.timeLimit,
-         course,
+         course : {id: course.id} as Course,
       });
    //At least 1 question when create quiz
    quiz.questions = dto.questions.map(qDto => {
-      const question = this.questionRepo.create({ questionName: qDto.questionName, quiz });
-      question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question }));
+      const question = this.questionRepo.create({ questionName: qDto.questionName, quiz :{id: quiz.id} as Quiz });
+      question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question : {id: question.id} as Question }));
       return question;
    });
       return this.quizRepo.save(quiz);
@@ -64,8 +65,8 @@ export class QuizService {
    async createQuestion(quizId: string, instructorId: string, dto: CreateQuestionDto): Promise<Question> {
       const quiz = await this.getQuizById(quizId);
       await this.courseService.verifyCourseOwnership(quiz.course.id, instructorId);
-      const question = this.questionRepo.create({ questionName: dto.questionName, quiz });
-      question.answers = dto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question }));
+      const question = this.questionRepo.create({ questionName: dto.questionName, quiz : {id: quiz.id} as Quiz });
+      question.answers = dto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question: {id: question.id} as Question }));
       return this.questionRepo.save(question);
    }
 

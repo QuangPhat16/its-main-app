@@ -5,6 +5,7 @@ import { ContentType, Lesson, LessonContent } from '../entities/lesson.entity';
 import { CreateLessonDto, UpdateLessonDto, CreateLessonContentDto } from '../dto/dtos';
 import { CourseService } from './course.service';
 import { MediaService } from './media.service';
+import { Course } from '../entities/course.entity';
 
 @Injectable()
 export class LessonService {
@@ -20,12 +21,12 @@ export class LessonService {
    async createLesson(courseId: string, instructorId: string, dto: CreateLessonDto): Promise<Lesson> {
       console.log("Validating instructor...")
       const course = await this.courseService.verifyCourseOwnership(courseId, instructorId);
-      const lesson = this.lessonRepo.create({ ...dto, course });
+      const lesson = this.lessonRepo.create({ ...dto, course: {id: courseId} as Course });
       if(dto.contents){
          lesson.contents = dto.contents.map((contentDto, index) =>
             this.contentRepo.create({
                ...contentDto,
-               lesson,
+               lesson : {id: lesson.id} as Lesson,
                order: index + 1, 
             })
       );}
@@ -70,7 +71,7 @@ export class LessonService {
       } else {
          const lesson = await this.getLessonById(lessonId);
          await this.courseService.verifyCourseOwnership(lesson.course.id, instructorId);
-         const content = this.contentRepo.create({ ...dto, lesson });
+         const content = this.contentRepo.create({ ...dto, lesson : {id: lesson.id} as Lesson });
          const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
          content.order = lastOrder + 1;
          return this.contentRepo.save(content);    
