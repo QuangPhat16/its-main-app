@@ -10,7 +10,7 @@ export class Quiz{
   @Column()
   title: string;
 
-  @Column()
+  @Column({default: 30})
   timeLimit: number;
 
   @OneToMany(()=>Question, (question) => question.quiz, {
@@ -36,7 +36,7 @@ export class Question {
 
   // Has many answers
   @OneToMany(() => Answer, (answer) => answer.question, {
-    cascade: true, 
+    // cascade: true, 
     eager: true, //auto load answers when retriving a question
   })
   answers: Answer[];

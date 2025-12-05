@@ -27,7 +27,7 @@ export class QuizController {
       @Req() req: any,
       @Body() dto: CreateQuizDto,
    ) {
-      return this.quizService.createQuiz(courseId, req.user.id, dto);
+      return this.quizService.createQuiz(courseId, req.user.userId, dto);
    }
 
    @Get(':courseId/quizzes')
@@ -60,7 +60,7 @@ export class QuizController {
       @Req() req: any,
       @Body() dto: UpdateQuizDto,
    ) {
-      return this.quizService.updateQuiz(quizId, req.user.id, dto);
+      return this.quizService.updateQuiz(quizId, req.user.userId, dto);
    }
 
    @Delete(':courseId/quizzes/:quizId')
@@ -68,7 +68,7 @@ export class QuizController {
    @Roles(UserRole.INSTRUCTOR)
    @ApiOperation({ summary: 'Delete quiz (owner only)' })
    deleteQuiz(@Param('quizId') quizId: string, @Req() req: any) {
-      return this.quizService.deleteQuiz(quizId, req.user.id);
+      return this.quizService.deleteQuiz(quizId, req.user.userId);
    }
 
    // ========== QUESTION CRUD (nested) ==========
@@ -82,7 +82,7 @@ export class QuizController {
       @Req() req: any,
       @Body() dto: CreateQuestionDto,
    ) {
-      return this.quizService.createQuestion(quizId, req.user.id, dto);
+      return this.quizService.createQuestion(quizId, req.user.userId, dto);
    }
 
    @Delete(':courseId/quizzes/:quizId/questions/:questionId')
@@ -90,6 +90,6 @@ export class QuizController {
    @Roles(UserRole.INSTRUCTOR)
    @ApiOperation({ summary: 'Delete a question from a quiz' })
    deleteQuestion(@Param('questionId') questionId: string, @Req() req: any) {
-      return this.quizService.deleteQuestion(questionId, req.user.id);
+      return this.quizService.deleteQuestion(questionId, req.user.userId);
    }
 }

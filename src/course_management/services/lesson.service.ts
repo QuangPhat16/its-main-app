@@ -18,11 +18,19 @@ export class LessonService {
    ) {}
 
    async createLesson(courseId: string, instructorId: string, dto: CreateLessonDto): Promise<Lesson> {
+      console.log("Validating instructor...")
       const course = await this.courseService.verifyCourseOwnership(courseId, instructorId);
       const lesson = this.lessonRepo.create({ ...dto, course });
-      lesson.contents = dto.contents.map((contentDto) =>
-         this.contentRepo.create({ ...contentDto, lesson }),
-      );
+      if(dto.contents){
+         lesson.contents = dto.contents.map((contentDto, index) =>
+            this.contentRepo.create({
+               ...contentDto,
+               lesson,
+               order: index + 1, 
+            })
+      );}
+      const lastOrder = await this.lessonRepo.count({ where: { course: { id: courseId } } });
+      lesson.order = lastOrder + 1;
       return this.lessonRepo.save(lesson);
    }
 
@@ -63,6 +71,8 @@ export class LessonService {
          const lesson = await this.getLessonById(lessonId);
          await this.courseService.verifyCourseOwnership(lesson.course.id, instructorId);
          const content = this.contentRepo.create({ ...dto, lesson });
+         const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
+         content.order = lastOrder + 1;
          return this.contentRepo.save(content);    
       }
    }
@@ -72,8 +82,11 @@ export class LessonService {
       if (!content) throw new NotFoundException();
       content.url = this.mediaService.getPublicUrl(key);
       // Add metadata
+      const lessonId = content.lesson.id;
+      const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
+      content.order = lastOrder + 1;
       return this.contentRepo.save(content);
-  }
+   }
 
    async deleteLessonContent(id: string, instructorId: string): Promise<void> {
       const content = await this.contentRepo.findOne({

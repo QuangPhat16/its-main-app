@@ -63,6 +63,6 @@ export class CourseController {
   @ApiOperation({ summary: 'Delete course (owner only)' })
   @ApiResponse({ status: 200, description: 'Course deleted' })
   deleteCourse(@Param('id') id: string, @Req() req: any) {
-    return this.courseService.deleteCourse(id, req.user.id);
+    return this.courseService.deleteCourse(id, req.user.userId);
   }
 }

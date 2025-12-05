@@ -17,10 +17,13 @@ export class Lesson {
   @Column()
   lessonName: string;
 
+  @Column()
+  order: number;
+
   // One Lesson has many LessonContents
   @OneToMany(() => LessonContent, (content) => content.lesson, {
-    cascade: true, // optional: auto-save contents when saving lesson
-    eager: false,  // set true if you want contents loaded automatically
+    // cascade: true, // optional: auto-save contents when saving lesson
+    eager: true,  // set true if you want contents loaded automatically
   })
   contents: LessonContent[];
 
@@ -37,7 +40,7 @@ export class LessonContent {
   id: string;  // type is string, not UUID from crypto
 
   @Column()
-  serial: number; //To maintain the order of lesson contents
+  order: number; //To maintain the order of lesson contents
 
   @Column({nullable: true})
   contentName: string
@@ -45,16 +48,17 @@ export class LessonContent {
   @Column({type: 'enum', enum: ContentType, default: ContentType.TEXT})
   type: ContentType
 
-  @Column()
-  content: string;// for text content
+  @Column({nullable:true})
+  text?: string;// for text content
 
-  @Column()
-  url: string;//for media content
+  @Column({nullable:true})
+  url?: string;//for media content
 
 
   @ManyToOne(() => Lesson, (lesson) => lesson.contents, {
     onDelete: 'CASCADE', // if lesson deleted, delete all contents
   })
+
   @JoinColumn({ name: 'lessonId' }) // creates lessonId column
   lesson: Lesson;
 

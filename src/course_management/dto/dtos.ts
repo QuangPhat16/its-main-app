@@ -52,7 +52,7 @@ export class CreateLessonDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateLessonContentDto)
-  contents: CreateLessonContentDto[];
+  contents?: CreateLessonContentDto[];
 }
 
 export class UpdateLessonDto {
@@ -71,7 +71,7 @@ export class CreateLessonContentDto {
   @ApiPropertyOptional({ example: 2 })
   @IsOptional()
   @IsNumber()
-  serial: number;
+  order?: number;
 
   @ApiPropertyOptional({ example: 'video-intro.mp4' })
   @IsString()
@@ -84,7 +84,7 @@ export class CreateLessonContentDto {
   @ApiPropertyOptional({ example: 'This is a text content' })
   @IsOptional()
   @IsString()
-  text: string;
+  text?: string;
 }
 
 

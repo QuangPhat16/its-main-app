@@ -16,6 +16,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiParam, A
 export class LessonController {
    constructor(private readonly lessonService: LessonService) {}
    // ========== LESSON CRUD ==========
+
    @Post(':courseId/lessons')
    @UseGuards(RolesGuard)
    @Roles(UserRole.INSTRUCTOR)
@@ -26,8 +27,8 @@ export class LessonController {
       @Param('courseId') courseId: string,
       @Req() req: any,
       @Body() dto: CreateLessonDto,
-   ) {
-      return this.lessonService.createLesson(courseId, req.user.id, dto);
+   ){
+      return this.lessonService.createLesson(courseId, req.user.userId, dto);
    }
 
    @Get(':courseId/lessons')
@@ -63,7 +64,7 @@ export class LessonController {
       @Req() req: any,
       @Body() dto: UpdateLessonDto,
    ) {
-      return this.lessonService.updateLesson(lessonId, req.user.id, dto);
+      return this.lessonService.updateLesson(lessonId, req.user.userId, dto);
    }
 
    @Delete(':courseId/lessons/:lessonId')
@@ -72,7 +73,7 @@ export class LessonController {
    @ApiOperation({ summary: 'Delete lesson (owner only)' })
    @ApiResponse({ status: 200, description: 'Lesson deleted' })
    deleteLesson(@Param('lessonId') lessonId: string, @Req() req: any) {
-      return this.lessonService.deleteLesson(lessonId, req.user.id);
+      return this.lessonService.deleteLesson(lessonId, req.user.userId);
    }
 
    // ========== LESSON CONTENT (TEXT + MEDIA) ==========
@@ -94,10 +95,10 @@ export class LessonController {
       @Body() dto: CreateLessonContentDto,
    ){
       if (dto.type !== ContentType.TEXT) {
-         const uploadData = this.lessonService.createLessonContent(lessonId, req.user.id, dto);
+         const uploadData = this.lessonService.createLessonContent(lessonId, req.user.userId, dto);
          return { message: 'Upload file using this data', ...uploadData };
       }
-      return this.lessonService.createLessonContent(lessonId, req.user.id, dto);
+      return this.lessonService.createLessonContent(lessonId, req.user.userId, dto);
    }
 
    @Post('content/:contentId/confirm')
@@ -114,6 +115,6 @@ export class LessonController {
    @ApiOperation({ summary: 'Delete lesson content (text or media)' })
    @ApiResponse({ status: 200, description: 'Content + S3 file deleted' })
    deleteLessonContent(@Param('contentId') contentId: string, @Req() req: any) {
-      return this.lessonService.deleteLessonContent(contentId, req.user.id);
+      return this.lessonService.deleteLessonContent(contentId, req.user.userId);
    }
 }
