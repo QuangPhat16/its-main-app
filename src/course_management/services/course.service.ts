@@ -38,7 +38,7 @@ export class CourseService {
    async getAllCourses(): Promise<Partial<Course>[]> {
       return this.courseRepo.find({
          where: { status: CourseStatus.PUBLISH },
-         select: ['id', 'title'],
+         // select: ['id', 'title'],
       });
    }
 
@@ -46,14 +46,14 @@ export class CourseService {
       return this.courseRepo.find({
          where: { instructor: { id: instructorId } },
          select: ['id', 'title'],
-         relations: ['instructor'],
+         // relations: ['instructor'],
       });
    }
 
    async getCourseById(id: string): Promise<Course> {
       const course = await this.courseRepo.findOne({
          where: { id },
-         relations: ['instructor'], 
+         // relations: ['instructor'], 
       });
       if (!course) {
          throw new NotFoundException(`Course with ID ${id} not found`);

@@ -26,12 +26,13 @@ export class QuizService {
          timeLimit: dto.timeLimit,
          course : {id: course.id} as Course,
       });
-   //At least 1 question when create quiz
-   quiz.questions = dto.questions.map(qDto => {
-      const question = this.questionRepo.create({ questionName: qDto.questionName, quiz :{id: quiz.id} as Quiz });
-      question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question : {id: question.id} as Question }));
-      return question;
-   });
+      //At least 1 question when create quiz
+      if(quiz.questions){
+         quiz.questions = dto.questions.map(qDto => {
+         const question = this.questionRepo.create({ questionName: qDto.questionName, quiz :{id: quiz.id} as Quiz });
+         question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question : {id: question.id} as Question }));
+         return question;
+      });}
       return this.quizRepo.save(quiz);
    }
 
