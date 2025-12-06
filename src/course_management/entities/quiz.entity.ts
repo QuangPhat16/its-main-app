@@ -61,8 +61,8 @@ export class Answer {
   @PrimaryGeneratedColumn('uuid')
   id: string;  
 
-  @Column()
-  correct: boolean;
+  @Column({ type: 'boolean', default: false })
+  isCorrect: boolean;
 
   @Column()
   content: string;

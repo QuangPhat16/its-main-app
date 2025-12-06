@@ -21,19 +21,17 @@ export class QuizService {
    async createQuiz(courseId: string, instructorId: string, dto: CreateQuizDto): Promise<Quiz> {
 
       const course = await this.courseService.verifyCourseOwnership(courseId, instructorId);
-      const quiz = this.quizRepo.create({
-         title: dto.title,
-         timeLimit: dto.timeLimit,
-         courseId
-      });
+      const quiz = this.quizRepo.create({ ...dto, courseId });
+      await this.quizRepo.save(quiz);
       //
-      if(quiz.questions){
+      if(dto.questions){
          quiz.questions = dto.questions.map(qDto => {
-         const question = this.questionRepo.create({ questionName: qDto.questionName, quizId: quiz.id});
-         question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, questionId: question.id }));
-         return question;
-      });}
-      return this.quizRepo.save(quiz);
+            const question = this.questionRepo.create({ questionName: qDto.questionName, quizId: quiz.id});
+            question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, questionId: question.id }));
+            return question;
+         }
+   );}
+      return quiz;
    }
 
    async getQuizzesByCourse(courseId: string, loadQuestions = false): Promise<Quiz[]> {

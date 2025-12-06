@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString, IsOptional, IsEnum, IsArray, ValidateNested, IsUrl, IsNumber, Min,
+  IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ContentType } from "../entities/lesson.entity";
@@ -103,7 +104,7 @@ export class CreateQuizDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateQuestionDto)
-  questions: CreateQuestionDto[];
+  questions?: CreateQuestionDto[];
 }
 
 export class UpdateQuizDto {
@@ -135,5 +136,7 @@ export class CreateAnswerDto {
   content: string;
 
   @ApiProperty({ example: true })
+  @IsBoolean()
+  @Type(() => Boolean)
   isCorrect: boolean;
 }
