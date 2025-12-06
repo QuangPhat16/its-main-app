@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CourseModule } from './course_management/modules/course.module';
+import { QuizAttemptModule } from './assessment session/quiz-attempt.module';
 // ... other modules
 
 @Module({
@@ -29,6 +30,7 @@ import { CourseModule } from './course_management/modules/course.module';
     }),
     AuthModule,
     CourseModule,
+    QuizAttemptModule
     // ...
   ],
   controllers: [AppController],    
