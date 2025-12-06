@@ -22,6 +22,9 @@ export class Quiz{
   @ManyToOne(() => Course, (course) => course.quizzes, { onDelete: 'CASCADE'})
   @JoinColumn({name: 'CourseId'})
   course: Course
+
+  @Column()
+  courseId: string
 }
 
 
@@ -36,7 +39,7 @@ export class Question {
 
   // Has many answers
   @OneToMany(() => Answer, (answer) => answer.question, {
-    // cascade: true, 
+    cascade: true, 
     eager: true, //auto load answers when retriving a question
   })
   answers: Answer[];
@@ -45,6 +48,9 @@ export class Question {
   @ManyToOne(() => Quiz, (quiz) =>quiz.questions, {})
   @JoinColumn({name: 'quizId'})
   quiz: Quiz;
+
+  @Column()
+  quizId: string
 
 }
 
@@ -64,7 +70,11 @@ export class Answer {
   @ManyToOne(() => Question, (question) => question.answers, {
     onDelete: 'CASCADE', 
   })
+
   @JoinColumn({ name: 'questionId' }) 
   question: Question;
+
+  @Column()
+  questionId: string
 
 }

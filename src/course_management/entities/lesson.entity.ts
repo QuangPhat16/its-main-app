@@ -22,14 +22,17 @@ export class Lesson {
 
   // One Lesson has many LessonContents
   @OneToMany(() => LessonContent, (content) => content.lesson, {
-    // cascade: true, // optional: auto-save contents when saving lesson
-    eager: true,  // set true if you want contents loaded automatically
+    cascade: true, // optional: auto-save contents when saving lesson
+    eager: false,  // set true if you want contents loaded automatically
   })
   contents: LessonContent[];
 
   @ManyToOne(()=> Course, (course) => course.lessons, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'courseId'})
   course: Course
+
+  @Column()
+  courseId: string
 
 }
 
@@ -61,5 +64,8 @@ export class LessonContent {
 
   @JoinColumn({ name: 'lessonId' }) // creates lessonId column
   lesson: Lesson;
+
+  @Column()
+  lessonId: string;
 
 }

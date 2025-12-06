@@ -17,35 +17,35 @@ export class CourseService {
    ){}
 
    async createCourse(authUser: { userId: string; role: string }, dto: CreateCourseDto): Promise<Course> {
-   if (authUser.role !== UserRole.INSTRUCTOR) {
-      throw new ForbiddenException('Only instructors can create courses');
-   }
+      if (authUser.role !== UserRole.INSTRUCTOR) {
+         throw new ForbiddenException('Only instructors can create courses');
+      }
 
-   const instructor = await this.instructorRepo.findOne({ where: { id: authUser.userId }});
-   if (!instructor) {
-      throw new NotFoundException('Instructor not found');
-   }
+      const instructor = await this.instructorRepo.findOne({ where: { id: authUser.userId }});
+      if (!instructor) {
+         throw new NotFoundException('Instructor not found');
+      }
 
-   const course = this.courseRepo.create({
-      ...dto,
-      instructor: { id: authUser.userId } as Instructor // only store instructor ID,
-   });
+      const course = this.courseRepo.create({
+         ...dto,
+         instructorId: authUser.userId
+      });
 
-   return this.courseRepo.save(course);
-   }
+      return this.courseRepo.save(course);
+      }
 
 
    async getAllCourses(): Promise<Partial<Course>[]> {
       return this.courseRepo.find({
          where: { status: CourseStatus.PUBLISH },
-         // select: ['id', 'title'],
+         select: ['id', 'title', 'price'],
       });
    }
 
    async getInstructorCourses(instructorId: string): Promise<Partial<Course>[]> {
       return this.courseRepo.find({
          where: { instructor: { id: instructorId } },
-         select: ['id', 'title'],
+         select: ['id', 'title', 'price'],
          // relations: ['instructor'],
       });
    }
@@ -63,7 +63,7 @@ export class CourseService {
 
    async updateCourse(id: string, instructorId: string, dto: UpdateCourseDto): Promise<Course> {
       const course = await this.getCourseById(id);
-      if (course.instructor.id !== instructorId) {
+      if (course.instructorId !== instructorId) {
          throw new ForbiddenException('You can only update your own courses');
       }
       Object.assign(course, dto);
@@ -72,7 +72,7 @@ export class CourseService {
 
    async deleteCourse(id: string, instructorId: string): Promise<void> {
       const course = await this.getCourseById(id);
-      if (course.instructor.id !== instructorId) {
+      if (course.instructorId !== instructorId) {
          throw new ForbiddenException('You can only delete your own courses');
       }
       await this.courseRepo.remove(course);
@@ -81,7 +81,8 @@ export class CourseService {
    // Helper for other services: Check if instructor owns the course
    async verifyCourseOwnership(courseId: string, instructorId: string): Promise<Course> {
       const course = await this.getCourseById(courseId);
-      if (course.instructor.id !== instructorId) {
+      console.log("Course info: ",course)
+      if (course.instructorId !== instructorId) {
          throw new ForbiddenException('You do not own this course');
       }
       return course;

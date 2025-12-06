@@ -41,4 +41,7 @@ export class Course {
   @JoinColumn({name: 'instructorId'})
   instructor: Instructor
 
+  @Column()
+  instructorId: string;
+
 }

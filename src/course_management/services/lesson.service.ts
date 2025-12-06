@@ -20,13 +20,15 @@ export class LessonService {
 
    async createLesson(courseId: string, instructorId: string, dto: CreateLessonDto): Promise<Lesson> {
       console.log("Validating instructor...")
+      console.log("instrucor id: ", instructorId)
+      console.log("course id: ", courseId)
       const course = await this.courseService.verifyCourseOwnership(courseId, instructorId);
-      const lesson = this.lessonRepo.create({ ...dto, course: {id: courseId} as Course });
+      const lesson = this.lessonRepo.create({ ...dto, courseId });
       if(dto.contents){
          lesson.contents = dto.contents.map((contentDto, index) =>
             this.contentRepo.create({
                ...contentDto,
-               lesson : {id: lesson.id} as Lesson,
+               lessonId: lesson.id,
                order: index + 1, 
             })
       );}
@@ -36,13 +38,13 @@ export class LessonService {
    }
 
    async getLessonsByCourse(courseId: string, loadContents = false): Promise<Lesson[]> {
-      const relations = loadContents ? ['contents', 'course'] : ['course'];
-      return this.lessonRepo.find({ where: { course: { id: courseId } }, relations });
+      // const relations = loadContents ? ['contents', 'course'] : ['course'];
+      return this.lessonRepo.find({ where: {  courseId } },);
    }
 
    async getLessonById(id: string, loadRelations = false): Promise<Lesson> {
-      const relations = loadRelations ? ['course', 'contents'] : ['course'];
-      const lesson = await this.lessonRepo.findOne({ where: { id }, relations });
+
+      const lesson = await this.lessonRepo.findOne({ where: { id }, relations: ['contents'] });
       if (!lesson) {
          throw new NotFoundException(`Lesson with ID ${id} not found`);
       }
@@ -51,14 +53,14 @@ export class LessonService {
 
    async updateLesson(id: string, instructorId: string, dto: UpdateLessonDto): Promise<Lesson> {
       const lesson = await this.getLessonById(id);
-      await this.courseService.verifyCourseOwnership(lesson.course.id, instructorId);
+      await this.courseService.verifyCourseOwnership(lesson.courseId, instructorId);
       Object.assign(lesson, dto);
       return this.lessonRepo.save(lesson);
    }
 
    async deleteLesson(id: string, instructorId: string): Promise<void> {
       const lesson = await this.getLessonById(id);
-      await this.courseService.verifyCourseOwnership(lesson.course.id, instructorId);
+      await this.courseService.verifyCourseOwnership(lesson.courseId, instructorId);
       await this.lessonRepo.remove(lesson);
    }
 
@@ -70,7 +72,7 @@ export class LessonService {
          // FE uploads, then calls a confirm endpoint with key
       } else {
          const lesson = await this.getLessonById(lessonId);
-         await this.courseService.verifyCourseOwnership(lesson.course.id, instructorId);
+         await this.courseService.verifyCourseOwnership(lesson.courseId, instructorId);
          const content = this.contentRepo.create({ ...dto, lesson : {id: lesson.id} as Lesson });
          const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
          content.order = lastOrder + 1;
@@ -98,7 +100,7 @@ export class LessonService {
          throw new NotFoundException(`Content with ID ${id} not found`);
       }
 
-      await this.courseService.verifyCourseOwnership(content.lesson.course.id, instructorId);
+      await this.courseService.verifyCourseOwnership(content.lesson.courseId, instructorId);
       
       if (content.url) {
          const key = this.extractKeyFromUrl(content.url); // Implement: parse URL to get key

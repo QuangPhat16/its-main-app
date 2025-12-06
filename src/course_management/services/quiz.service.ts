@@ -24,26 +24,25 @@ export class QuizService {
       const quiz = this.quizRepo.create({
          title: dto.title,
          timeLimit: dto.timeLimit,
-         course : {id: course.id} as Course,
+         courseId
       });
-      //At least 1 question when create quiz
+      //
       if(quiz.questions){
          quiz.questions = dto.questions.map(qDto => {
-         const question = this.questionRepo.create({ questionName: qDto.questionName, quiz :{id: quiz.id} as Quiz });
-         question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question : {id: question.id} as Question }));
+         const question = this.questionRepo.create({ questionName: qDto.questionName, quizId: quiz.id});
+         question.answers = qDto.answers.map((aDto) => this.answerRepo.create({ ...aDto, questionId: question.id }));
          return question;
       });}
       return this.quizRepo.save(quiz);
    }
 
    async getQuizzesByCourse(courseId: string, loadQuestions = false): Promise<Quiz[]> {
-      const relations = loadQuestions ? ['questions', 'questions.answers', 'course'] : ['course'];
-      return this.quizRepo.find({ where: { course: { id: courseId } }, relations });
+      // const relations = loadQuestions ? ['questions', 'questions.answers', 'course'] : ['course'];
+      return this.quizRepo.find({ where: {courseId } });
    }
 
    async getQuizById(id: string, loadRelations = false): Promise<Quiz> {
-      const relations = loadRelations ? ['course', 'questions', 'questions.answers'] : ['course'];
-      const quiz = await this.quizRepo.findOne({ where: { id }, relations });
+      const quiz = await this.quizRepo.findOne({ where: { id }, relations: ['questions'] });
       if (!quiz) {
          throw new NotFoundException(`Quiz with ID ${id} not found`);
       }
@@ -52,22 +51,22 @@ export class QuizService {
 
    async updateQuiz(id: string, instructorId: string, dto: UpdateQuizDto): Promise<Quiz> {
       const quiz = await this.getQuizById(id);
-      await this.courseService.verifyCourseOwnership(quiz.course.id, instructorId);
+      await this.courseService.verifyCourseOwnership(quiz.courseId, instructorId);
       Object.assign(quiz, dto);
       return this.quizRepo.save(quiz);
    }
 
    async deleteQuiz(id: string, instructorId: string): Promise<void> {
       const quiz = await this.getQuizById(id);
-      await this.courseService.verifyCourseOwnership(quiz.course.id, instructorId);
+      await this.courseService.verifyCourseOwnership(quiz.courseId, instructorId);
       await this.quizRepo.remove(quiz);
    }
 
    async createQuestion(quizId: string, instructorId: string, dto: CreateQuestionDto): Promise<Question> {
       const quiz = await this.getQuizById(quizId);
-      await this.courseService.verifyCourseOwnership(quiz.course.id, instructorId);
-      const question = this.questionRepo.create({ questionName: dto.questionName, quiz : {id: quiz.id} as Quiz });
-      question.answers = dto.answers.map((aDto) => this.answerRepo.create({ ...aDto, question: {id: question.id} as Question }));
+      await this.courseService.verifyCourseOwnership(quiz.courseId, instructorId);
+      const question = this.questionRepo.create({ questionName: dto.questionName, quizId: quiz.id });
+      question.answers = dto.answers.map((aDto) => this.answerRepo.create({ ...aDto, questionId: question.id}));
       return this.questionRepo.save(question);
    }
 
