@@ -38,23 +38,29 @@ export class CourseService {
    async getAllCourses(): Promise<Partial<Course>[]> {
       return this.courseRepo.find({
          where: { status: CourseStatus.PUBLISH },
-         select: ['id', 'title', 'price'],
+         select: ['id', 'title', 'price', 'description'],
       });
    }
 
    async getInstructorCourses(instructorId: string): Promise<Partial<Course>[]> {
       return this.courseRepo.find({
          where: { instructor: { id: instructorId } },
-         select: ['id', 'title', 'price'],
+         select: ['id', 'title', 'price', 'description'],
          // relations: ['instructor'],
       });
    }
 
    async getCourseById(id: string): Promise<Course> {
-      const course = await this.courseRepo.findOne({
-         where: { id },
-         // relations: ['instructor'], 
-      });
+      const course = await this.courseRepo
+         .createQueryBuilder('course')
+         .leftJoinAndSelect('course.instructor', 'instructor')
+         .select([
+            'course',
+            'instructor.id',
+            'instructor.name',
+         ])
+         .where('course.id = :id', { id })
+         .getOne();
       if (!course) {
          throw new NotFoundException(`Course with ID ${id} not found`);
       }
