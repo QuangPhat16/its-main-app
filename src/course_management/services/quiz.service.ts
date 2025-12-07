@@ -76,7 +76,7 @@ export class QuizService {
       if (!question) {
          throw new NotFoundException(`Question with ID ${id} not found`);
       }
-      await this.courseService.verifyCourseOwnership(question.quiz.course.id, instructorId);
+      await this.courseService.verifyCourseOwnership(question.quiz.courseId, instructorId);
       await this.questionRepo.remove(question);
    }
 }
