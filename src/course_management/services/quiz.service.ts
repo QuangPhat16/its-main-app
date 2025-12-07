@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { Quiz, Question, Answer } from '../entities/quiz.entity';
 import { CreateQuizDto, UpdateQuizDto, CreateQuestionDto } from '../dto/dtos';
 import { CourseService } from './course.service';
-import { Course } from '../entities/course.entity';
 
 @Injectable()
 export class QuizService {
