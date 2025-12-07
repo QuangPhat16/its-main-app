@@ -92,7 +92,7 @@ export class CreateLessonContentDto {
 export class CreateQuizDto {
   @ApiProperty({ example: 'Regular Quiz 1' })
   @IsString()
-  title: string;
+  quizName: string;
 
   @ApiPropertyOptional({ example: 60 })
   @IsOptional()

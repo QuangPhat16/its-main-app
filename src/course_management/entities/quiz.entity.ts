@@ -8,7 +8,7 @@ export class Quiz{
   id: string;
 
   @Column()
-  title: string;
+  quizName: string;
 
   @Column({default: 30})
   timeLimit: number;
