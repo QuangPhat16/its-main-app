@@ -89,14 +89,14 @@ export class LessonController {
          • MEDIA: returns pre-signed S3 upload data (url, fields, key)
       `,
    })
-   createLessonContent(
+   async createLessonContent(
       @Param('lessonId') lessonId: string,
       @Req() req: any,
       @Body() dto: CreateLessonContentDto,
    ){
       if (dto.type !== ContentType.TEXT) {
-         const uploadData = this.lessonService.createLessonContent(lessonId, req.user.userId, dto);
-         return { message: 'Upload file using this data', ...uploadData };
+         const uploadData = await this.lessonService.createLessonContent(lessonId, req.user.userId, dto);
+         return { message: 'Upload file using this data:', ...uploadData };
       }
       return this.lessonService.createLessonContent(lessonId, req.user.userId, dto);
    }
