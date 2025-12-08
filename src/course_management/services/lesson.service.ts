@@ -75,6 +75,7 @@ export class LessonService {
       });
       const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
       content.order = lastOrder + 1;
+      await this.contentRepo.save(content);
 
       if (dto.type !== ContentType.TEXT) {
 
@@ -92,8 +93,8 @@ export class LessonService {
          };
 
       } else{//Text type, return full object
-         
-         return this.contentRepo.save(content);
+
+         return content
       }
 
    }
