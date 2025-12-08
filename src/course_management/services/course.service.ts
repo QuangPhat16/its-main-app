@@ -87,7 +87,7 @@ export class CourseService {
    // Helper for other services: Check if instructor owns the course
    async verifyCourseOwnership(courseId: string, instructorId: string): Promise<Course> {
       const course = await this.getCourseById(courseId);
-      // console.log("Course info: ",course)
+      
       if (course.instructorId !== instructorId) {
          throw new ForbiddenException('You do not own this course');
       }

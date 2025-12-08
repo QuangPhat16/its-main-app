@@ -19,9 +19,9 @@ export class LessonService {
    ) {}
 
    async createLesson(courseId: string, instructorId: string, dto: CreateLessonDto): Promise<Lesson> {
-      console.log("Validating instructor...")
-      console.log("instrucor id: ", instructorId)
-      console.log("course id: ", courseId)
+      // console.log("Validating instructor...")
+      // console.log("instrucor id: ", instructorId)
+      // console.log("course id: ", courseId)
       const course = await this.courseService.verifyCourseOwnership(courseId, instructorId);
       const lesson = this.lessonRepo.create({ ...dto, courseId });
       if(dto.contents){
@@ -64,21 +64,40 @@ export class LessonService {
       await this.lessonRepo.remove(lesson);
    }
 
-   async createLessonContent(lessonId: string, instructorId: string, dto: CreateLessonContentDto): Promise<LessonContent | { preSignedUrl: string; fields: any; key: string; }> {
+   async createLessonContent(lessonId: string, instructorId: string, dto: CreateLessonContentDto) {
+      const lesson = await this.getLessonById(lessonId);
+      await this.courseService.verifyCourseOwnership(lesson.courseId, instructorId);
+
+      //Create content first regarddless the type
+      const content = this.contentRepo.create({
+         ...dto,
+         lesson: { id: lesson.id } as Lesson,
+      });
+      const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
+      content.order = lastOrder + 1;
+
       if (dto.type !== ContentType.TEXT) {
-         // Generate pre-signed upload
-         const  { url, fields, key } = await this.mediaService.generateUploadUrl(dto.contentName, dto.type);
-         return { preSignedUrl: url, fields, key }
-         // FE uploads, then calls a confirm endpoint with key
-      } else {
-         const lesson = await this.getLessonById(lessonId);
-         await this.courseService.verifyCourseOwnership(lesson.courseId, instructorId);
-         const content = this.contentRepo.create({ ...dto, lesson : {id: lesson.id} as Lesson });
-         const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
-         content.order = lastOrder + 1;
-         return this.contentRepo.save(content);    
+
+         // Generate pre-signed URL
+         const { url, fields, key } = await this.mediaService.generateUploadUrl(
+            dto.contentName,
+            dto.type
+         );
+
+         return {
+            contentId: content.id, // FE uses this to confirm
+            preSignedUrl: url,
+            fields,
+            key,
+         };
+
+      } else{//Text type, return full object
+         
+         return this.contentRepo.save(content);
       }
+
    }
+
 
    async confirmMediaUpload(contentId: string, key: string): Promise<LessonContent> {
       const content = await this.contentRepo.findOne({ where: { id: contentId } });
