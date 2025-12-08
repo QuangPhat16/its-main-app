@@ -60,7 +60,7 @@ export class UpdateLessonDto {
   @ApiPropertyOptional({ example: 'Updated Lesson Title' })
   @IsOptional()
   @IsString()
-  title?: string;
+  lessonName?: string;
 
   @ApiPropertyOptional({ example: 2 })
   @IsOptional()
