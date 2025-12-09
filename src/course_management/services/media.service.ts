@@ -23,10 +23,10 @@ export class MediaService {
          Key: key,
          Conditions: [
          ['content-length-range', 0, 10485760], // Max 10MB
-         { acl: 'public-read' }, // Or private if needed
+         // { acl: 'public-read' }, // Or private if needed
          ['starts-with', '$Content-Type', mimeType],
          ],
-         Fields: { acl: 'public-read', 'Content-Type': mimeType },
+         // Fields: { acl: 'public-read', 'Content-Type': mimeType },
          Expires: 900, // 15 mins
       });
 

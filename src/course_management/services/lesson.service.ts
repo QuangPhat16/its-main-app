@@ -105,7 +105,7 @@ export class LessonService {
       if (!content) throw new NotFoundException();
       content.url = this.mediaService.getPublicUrl(key);
       // Add metadata
-      const lessonId = content.lesson.id;
+      const lessonId = content.lessonId;
       const lastOrder = await this.contentRepo.count({ where: { lesson: { id: lessonId } } });
       content.order = lastOrder + 1;
       return this.contentRepo.save(content);
