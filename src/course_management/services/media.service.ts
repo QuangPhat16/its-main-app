@@ -26,7 +26,7 @@ export class MediaService {
          // { acl: 'public-read' }, // Or private if needed
          ['starts-with', '$Content-Type', mimeType],
          ],
-         // Fields: { acl: 'public-read', 'Content-Type': mimeType },
+         Fields: { 'Content-Type': mimeType },
          Expires: 900, // 15 mins
       });
 
